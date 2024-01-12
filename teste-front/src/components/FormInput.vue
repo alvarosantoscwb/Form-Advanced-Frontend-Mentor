@@ -41,7 +41,7 @@
             type="email"
             color="black"
             :style="$q.screen.gt.xs ? 'width: 330px' : 'width: 310px'"
-            :rules="emailRule"
+            :rules="[...emailRule, emailExistsRule]"
           ></q-input>
           <q-btn
             class="button-form text-white q-mt-xs text-capitalize"
@@ -70,32 +70,37 @@ import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 
 const $q = useQuasar();
-
 const router = useRouter();
+
 const email = ref("");
+const emailExistsError = ref("E-mail já registrado");
 
 const emailRule = ref([
   (v) => !!v || "Email is required",
   (v) => /.+@.+\..+/.test(v) || "Enter a valid email address",
 ]);
+
 const labelArray = ref([
   "Product discovery and building what matters",
   "Measuring to ensure updates are a success",
   "And much more!",
 ]);
 
+const emailAlreadyExists = (newEmail) => {
+  const existingEmail = localStorage.getItem("user_email");
+  return existingEmail === newEmail;
+};
+const emailExistsRule = (v) => !emailAlreadyExists(v) || emailExistsError.value;
+
 const subscribe = () => {
   if (email.value && email.value.includes("@") && email.value.includes(".")) {
     if (emailAlreadyExists(email.value)) {
-      alert("E-mail ja registrado");
+      emailExistsError.value = "E-mail já registrado";
     } else {
+      emailExistsError.value = ""; // Limpa a mensagem de erro se não houver erro
       localStorage.setItem("user_email", email.value);
       router.push("/sucess-subscribe");
     }
   }
-};
-const emailAlreadyExists = (newEmail) => {
-  const existingEmail = localStorage.getItem("user_email");
-  return existingEmail === newEmail;
 };
 </script>
