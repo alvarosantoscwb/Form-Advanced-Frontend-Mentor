@@ -51,13 +51,13 @@ const steps = ref([
     currentStep: 2,
   },
   {
-    title: "Add-ons",
-    description: "Customize your plan with additional features.",
+    title: "Pick add-ons",
+    description: "Add ons help enhance your gaming experience.",
     currentStep: 3,
   },
   {
-    title: "Summary",
-    description: "Review your information before proceeding.",
+    title: "Finishing up",
+    description: "Double-check everything looks OK before confirming.",
     currentStep: 4,
   },
 ]);

@@ -1,12 +1,9 @@
 <template>
   <div class="antialiased">
     <div class="flex w-full min-h-screen justify-center items-center">
-      <div
-        class="bg-white flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 w-full max-w-4xl p-4 rounded-xl shadow-2 relative"
-      >
-        <!-- Adiciona a borda redonda à imagem -->
-        <div class="columns-2 relative">
-          <div class="relative">
+      <div class="bg-white p-4 rounded-xl shadow-2 relative w-[800px]">
+        <div class="columns-2 relative mr-36">
+          <div class="relative w-fit">
             <img
               class="h-[500px] object-cover rounded-md"
               src="~assets/bg-sidebar-desktop.svg"
@@ -45,15 +42,16 @@
           </div>
 
           <div class="flex flex-col space-y-4">
-            <p class="text-3xl font-extrabold mt-8 text-[#02295D]">
-              {{ title }}
-            </p>
-            <p class="text-sm text-gray-400">
-              {{ description }}
-            </p>
-
+            <div class="space-y-2">
+              <div class="space-y-2 w-[400px]">
+                <p class="text-3xl font-extrabold mt-8 text-[#02295D]">
+                  {{ title }}
+                </p>
+                <p class="text-sm text-gray-400">{{ description }}</p>
+              </div>
+            </div>
             <div v-if="currentStep === 1" class="font-semibold text-[#02295D]">
-              <p class="mb-1">Name</p>
+              <p class="mb-1 mt-4">Name</p>
               <q-input outlined dense></q-input>
               <p class="mt-4 mb-1">Email Address</p>
               <q-input outlined dense></q-input>
@@ -65,9 +63,9 @@
                 <div
                   v-for="(product, index) in products"
                   :key="index"
-                  class="border-2 rounded-sm w-[150px] h-[170px] cursor-pointer p-4 flex flex-col items-center justify-between"
+                  class="border-2 rounded-sm w-full cursor-pointer p-4 flex"
                 >
-                  <img :src="`~${product.img}`" />
+                  <q-img :src="`assets/${product.img}.svg`" />
                   <div>
                     <p class="text-bold">{{ product.name }}</p>
                     <span>{{ product.price }}</span>
@@ -75,18 +73,79 @@
                 </div>
               </div>
             </div>
-            <div v-if="currentStep === 3">STEP 3</div>
-            <div v-if="currentStep === 4">STEP 4</div>
-            <div class="text-right mt-[90px]">
+            <div v-if="currentStep === 3">
+              <div class="border-2 border-[#645FA2] rounded-md">
+                <div class="flex p-6">
+                  <div class="flex">
+                    <q-checkbox
+                      v-model="isChecked"
+                      color="secondary"
+                    ></q-checkbox>
+                  </div>
+                  <div class="flex">
+                    <span class="text-bold text-md text-[#02295D]"
+                      >Arcade (Monthly)</span
+                    >
+                    <p class="text-gray-400">Acess to multiplayer games</p>
+                    <div>
+                      <div>
+                        <p class="text-purple-500 float-right text-bold">
+                          +$9/mo
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="currentStep === 4">
+              <div class="mt-8">
+                <div class="bg-[#F8F9FE] p-4">
+                  <div>
+                    <span class="text-bold text-md text-[#02295D]"
+                      >Arcade (Monthly)</span
+                    >
+                    <span class="text-[#02295D] float-right mt-1 text-bold"
+                      >+$9/mo</span
+                    >
+                    <p
+                      class="text-gray-400 cursor-pointer underline hover:text-[#938CFE]"
+                    >
+                      Change
+                    </p>
+                  </div>
+                  <div class="mt-8">
+                    <span class="text-gray-400">Online service</span>
+                    <span class="float-right text-[#02295D]">+$1/mo</span>
+                    <div class="mt-4">
+                      <span class="text-gray-400">Larger storage</span>
+                      <span class="text-[#02295D] float-right">+$2/mo</span>
+                    </div>
+                  </div>
+                  <div class="mt-8">
+                    <span class="text-gray-400">Total (per month)</span>
+                    <span class="text-purple-500 text-lg text-bold float-right"
+                      >+$12/mo</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-14">
               <q-btn
                 v-show="currentStep > 1"
-                class="text-capitalize bg-[#174A8B] text-white text-medium mr-2"
-                label="Back"
+                class="text-capitalize bg-gray-100 text-gray-400 float-left outlined rounded-md"
+                label="Go Back"
                 @click="previousStep"
               ></q-btn>
               <q-btn
-                class="text-capitalize bg-[#174A8B] text-white text-medium"
-                label="Next Step"
+                :class="
+                  currentStep === 4
+                    ? 'bg-[#483EFF] hover:bg-[#938CFE]'
+                    : 'bg-[#174A8B]'
+                "
+                class="text-capitalize text-white float-right w-[100px] rounded-md"
+                :label="currentStep === 4 ? 'Confirm' : 'Next Step'"
                 @click="nextStep"
               ></q-btn>
             </div>
@@ -118,9 +177,9 @@ const emailRule = ref([
 ]);
 
 const products = ref([
-  { name: "Arcade", img: "assets/icon-arcade.svg", price: "$9" },
-  { name: "Advanced", img: "assets/icon-advanced.svg", price: "$12" },
-  { name: "Pro", img: "assets/icon-pro.svg", price: "$13" },
+  { name: "Arcade", img: "icon-arcade", price: "$9" },
+  { name: "Advanced", img: "icon-advanced", price: "$12" },
+  { name: "Pro", img: "icon-pro", price: "$13" },
 ]);
 
 const steps = ref([
