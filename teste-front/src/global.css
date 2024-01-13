@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Ubuntu", sans-serif;
+  src: url(./assets/fonts/Ubuntu-Regular.ttf);
+}
+
+body {
+  background-color: #eef5ff;
+  font-family: "Ubuntu", sans-serif;
+}

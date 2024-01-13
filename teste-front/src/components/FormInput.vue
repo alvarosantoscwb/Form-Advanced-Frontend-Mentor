@@ -1,78 +1,115 @@
 <template>
-  <div
-    class="bg-white column inline"
-    style="width: 800px; height: 550px; border-radius: 16px"
-  >
-    <div class="q-mt-lg">
-      <h3 class="text-bold q-mb-md text-center">Stay updated!</h3>
-      <div class="q-ml-md" style="font-weight: 500">
-        <div style="padding-left: 35px">
-          <span
-            >Join 60.000+ product managers receiving monthly<br />
-            updates on:</span
-          >
-        </div>
-        <div class="q-mt-md" style="margin-left: 34px">
-          <div
-            class="q-mt-md"
-            v-for="list in labelArray"
-            :key="list.id"
-            style="display: flex; align-items: center"
-          >
-            <q-img
-              class="q-mr-md"
-              src="~assets/icon-list.svg"
-              style="height: 18px; width: 18px"
+  <div class="antialiased">
+    <div class="flex w-full min-h-screen justify-center items-center">
+      <div
+        class="bg-white flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 w-full max-w-4xl p-4 rounded-xl shadow-2 relative"
+      >
+        <!-- Adiciona a borda redonda à imagem -->
+        <div class="columns-2 relative">
+          <div class="relative">
+            <img
+              class="h-[500px] object-cover rounded-md"
+              src="~assets/bg-sidebar-desktop.svg"
             />
-            <span>{{ list }}</span>
+            <!-- Adiciona o número acima da imagem com borda redonda -->
+
+            <template v-for="(step, index) in steps" :key="index">
+              <div
+                :style="{
+                  top: step.top + 'px',
+                  left: step.left + 'px',
+                }"
+                class="absolute border-2 text-white border-[#FFFFFF] rounded-full h-8 w-8 flex items-center justify-center font-semibold"
+              >
+                {{ step.textnum }}
+              </div>
+              <p
+                :style="{
+                  top: step.top - 12 + 'px',
+                  left: step.left + 30 + 'px',
+                }"
+                class="ml-4 absolute text-gray-400 rounded-full h-9 flex items-center justify-center text-xs"
+              >
+                STEP {{ step.number }}
+              </p>
+              <p
+                :style="{
+                  top: step.top + 7 + 'px',
+                  left: step.left + 30 + 'px',
+                }"
+                class="ml-4 absolute text-white font-bold rounded-full h-9 flex items-center justify-center text-xs"
+              >
+                {{ step.text }}
+              </p>
+            </template>
+          </div>
+
+          <div class="flex flex-col space-y-4">
+            <p class="text-3xl font-extrabold mt-8 text-[#02295D]">
+              {{ title }}
+            </p>
+            <p class="text-sm text-gray-400">
+              {{ description }}
+            </p>
+
+            <div v-if="currentStep === 1" class="font-semibold text-[#02295D]">
+              <p class="mb-1">Name</p>
+              <q-input outlined dense></q-input>
+              <p class="mt-4 mb-1">Email Address</p>
+              <q-input outlined dense></q-input>
+              <p class="mt-4 mb-1">Phone Number</p>
+              <q-input outlined dense></q-input>
+            </div>
+            <div v-if="currentStep === 2">
+              <div class="mr-20">
+                <div
+                  v-for="(product, index) in products"
+                  :key="index"
+                  class="border-2 rounded-sm w-[150px] h-[170px] cursor-pointer p-4 flex flex-col items-center justify-between"
+                >
+                  <img :src="`~${product.img}`" />
+                  <div>
+                    <p class="text-bold">{{ product.name }}</p>
+                    <span>{{ product.price }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="currentStep === 3">STEP 3</div>
+            <div v-if="currentStep === 4">STEP 4</div>
+            <div class="text-right mt-[90px]">
+              <q-btn
+                v-show="currentStep > 1"
+                class="text-capitalize bg-[#174A8B] text-white text-medium mr-2"
+                label="Back"
+                @click="previousStep"
+              ></q-btn>
+              <q-btn
+                class="text-capitalize bg-[#174A8B] text-white text-medium"
+                label="Next Step"
+                @click="nextStep"
+              ></q-btn>
+            </div>
           </div>
         </div>
-        <div style="margin-left: 34px; padding-top: 32px">
-          <label
-            class="q-mb-sm text-bold"
-            style="display: block; text-align: left; font-size: 11px"
-            >Email address</label
-          >
-          <q-input
-            v-model="email"
-            outlined
-            dense
-            placeholder="email@company.com"
-            type="email"
-            color="black"
-            :style="$q.screen.gt.xs ? 'width: 330px' : 'width: 310px'"
-            :rules="[...emailRule, emailExistsRule]"
-          ></q-input>
-          <q-btn
-            class="button-form text-white q-mt-xs text-capitalize"
-            :style="$q.screen.gt.xs ? 'width: 330px' : 'width: 310px'"
-            style="display: block; padding: 10px; border-radius: 8px"
-            @click="subscribe"
-            label="subscribe to monthly newsletter"
-          ></q-btn>
-        </div>
       </div>
-    </div>
-
-    <div v-if="$q.screen.gt.xs" class="flex q-mt-md">
-      <q-img
-        src="~assets/illustration-sign-up-desktop.svg"
-        style="height: 100%; height: 500px; width: 350px; margin: 12px"
-        fit
-      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useQuasar } from "quasar";
+import { ref, defineProps } from "vue";
 
-const $q = useQuasar();
-const router = useRouter();
+const props = defineProps({
+  title: String,
+  description: String,
+  currentStep: Number,
+  onNextStep: Function,
+  onPreviousStep: Function,
+});
 
 const email = ref("");
+const isChecked = ref("");
 const emailExistsError = ref("E-mail já registrado");
 
 const emailRule = ref([
@@ -80,10 +117,17 @@ const emailRule = ref([
   (v) => /.+@.+\..+/.test(v) || "Enter a valid email address",
 ]);
 
-const labelArray = ref([
-  "Product discovery and building what matters",
-  "Measuring to ensure updates are a success",
-  "And much more!",
+const products = ref([
+  { name: "Arcade", img: "assets/icon-arcade.svg", price: "$9" },
+  { name: "Advanced", img: "assets/icon-advanced.svg", price: "$12" },
+  { name: "Pro", img: "assets/icon-pro.svg", price: "$13" },
+]);
+
+const steps = ref([
+  { number: 1, top: 30, left: 30, text: "YOUR INFO", textnum: "1" },
+  { number: 2, top: 90, left: 30, text: "SELECT PLAN", textnum: "2" },
+  { number: 3, top: 150, left: 30, text: "ADD-ONS", textnum: "3" },
+  { number: 4, top: 210, left: 30, text: "SUMMARY", textnum: "4" },
 ]);
 
 const emailAlreadyExists = (newEmail) => {
@@ -92,15 +136,11 @@ const emailAlreadyExists = (newEmail) => {
 };
 const emailExistsRule = (v) => !emailAlreadyExists(v) || emailExistsError.value;
 
-const subscribe = () => {
-  if (email.value && email.value.includes("@") && email.value.includes(".")) {
-    if (emailAlreadyExists(email.value)) {
-      emailExistsError.value = "E-mail já registrado";
-    } else {
-      emailExistsError.value = ""; // Limpa a mensagem de erro se não houver erro
-      localStorage.setItem("user_email", email.value);
-      router.push("/sucess-subscribe");
-    }
-  }
+const previousStep = () => {
+  props.onPreviousStep();
+};
+
+const nextStep = () => {
+  props.onNextStep();
 };
 </script>
