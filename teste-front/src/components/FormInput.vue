@@ -62,6 +62,14 @@
                 >
                   {{ description }}
                 </p>
+                <div>
+                  <span
+                    v-if="errorMessage && selectedProductIndex == -1"
+                    class="text-red-500 text-md absolute pt-1"
+                  >
+                    {{ errorMessage }}
+                  </span>
+                </div>
               </div>
             </div>
             <div v-if="currentStep === 0" class="text-[#02295D]">
@@ -72,6 +80,7 @@
                 dense
                 v-model="nameIn"
                 :rules="[...nameRule]"
+                ref="nameInput"
               ></q-input>
               <p>Email Address</p>
               <q-input
@@ -79,6 +88,7 @@
                 dense
                 v-model="email"
                 :rules="[...emailRule]"
+                ref="emailInput"
               ></q-input>
               <p>Phone Number</p>
               <q-input
@@ -87,6 +97,7 @@
                 v-model="phoneNumber"
                 :rules="[...phoneRule]"
                 mask="(##) #####-####"
+                ref="phoneInput"
               ></q-input>
             </div>
             <div v-if="currentStep === 1">
@@ -100,6 +111,11 @@
                       index === selectedProductIndex ? 'border-[#483EFF]' : ''
                     "
                     class="border-2 mt-8 hover:border-[#483EFF] rounded-xl cursor-pointer p-4 w-[125px]"
+                    :style="
+                      selectedProductIndex == -1 && errorMessage
+                        ? 'border: 2px solid red'
+                        : ''
+                    "
                   >
                     <q-img
                       :src="product.img"
@@ -118,6 +134,7 @@
                   </div>
                 </div>
               </div>
+
               <div
                 class="mt-9 flex justify-center items-center"
                 :class="toggleValue == false ? 'mt-[50px]' : 'mt-[34px]'"
@@ -219,7 +236,7 @@
                   "
                   :style="
                     selectedModesData.length == 1
-                      ? 'margin-top: 40px; margin-bottom: 102px;'
+                      ? 'margin-top: 60px; margin-bottom: 102px;'
                       : ''
                   "
                 >
@@ -228,6 +245,11 @@
                     :key="index"
                     :class="
                       selectedModesData.length == 3 ? 'mt-[40px] mb-[40px]' : ''
+                    "
+                    :style="
+                      selectedModesData.length == 0
+                        ? 'margin-top: 40px; margin-bottom: 165px;'
+                        : ''
                     "
                   >
                     <span class="text-bold text-md text-[#02295D]">{{
@@ -292,14 +314,7 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  defineProps,
-  computed,
-  watchEffect,
-  onMounted,
-  onUnmounted,
-} from "vue";
+import { ref, defineProps, computed, watchEffect, onMounted } from "vue";
 import iconAdvanced from "../assets/icon-advanced.svg";
 import iconArcade from "../assets/icon-arcade.svg";
 import iconPro from "../assets/icon-pro.svg";
@@ -327,6 +342,10 @@ onMounted(() => {
   updateLocalStorage();
 });
 
+const errorMessage = ref("");
+const emailInput = ref();
+const nameInput = ref();
+const phoneInput = ref();
 const customService = ref(
   JSON.parse(localStorage.getItem("customService")) || false
 );
@@ -520,8 +539,14 @@ const nextStep = () => {
     const isPhoneValid = phoneRule.value.every(
       (rule) => rule(phoneNumber.value) === true
     );
+    let emailvalid = emailInput.value;
+    let namevalid = nameInput.value;
+    let phonevalid = phoneInput.value;
 
     if (!isEmailValid || !isNameValid || !isPhoneValid) {
+      emailvalid.validate();
+      namevalid.validate();
+      phonevalid.validate();
       return;
     }
 
@@ -532,6 +557,7 @@ const nextStep = () => {
   }
   if (props.currentStep === 1) {
     if (selectedProductIndex.value == -1) {
+      errorMessage.value = "Select plan is required";
       return;
     } else props.onNextStep();
   }
@@ -541,7 +567,7 @@ const nextStep = () => {
       onlineService.value == false &&
       customService.value == false
     ) {
-      return;
+      props.onNextStep();
     } else props.onNextStep();
   }
   if (props.currentStep === 3) {
