@@ -1,4 +1,4 @@
-Teste project using Quasar
+Projeto do site frontend mentor Advanced, feito em Vue.js com framework Quasar e tailwindcss
 
 ## Install the dependencies
 ```bash
